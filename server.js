@@ -83,12 +83,14 @@ const addMessage = async (req, res) => {
 
 const updateMessage = async (req, res) => {
     try {
-        console.log('Delete Data...');
+        console.log('Update Data...');
         console.log(req.body);
         client.get("messages", function (err, data) {
             let messages = JSON.parse(data);
             const found = messages.find(el => el.id == req.body.id);
-            messages.splice(messages.indexOf(found), 1);
+            const i = messages.indexOf(found)
+            messages[i].name = req.body.name;
+            messages[i].message = req.body.message;
             client.set("messages", JSON.stringify(messages));
             res.send(messages);
         });

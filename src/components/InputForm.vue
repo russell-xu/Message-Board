@@ -1,7 +1,7 @@
 <template>
   <section>
     <div class="container">
-      <form @submit.prevent="onSubmit">
+      <form class="add-form" @submit.prevent="onSubmit">
         <h1 class="title">新增留言</h1>
         <div class="form-group">
           <label for="name" class="form-label">Name</label>
@@ -16,8 +16,8 @@
             v-model="message"
           ></textarea>
         </div>
-        <input type="submit" class="submit-btn" value="Submit" />
-        <input type="reset" class="reset-btn" value="Reset" />
+        <input type="submit" class="btn submit-btn" value="Submit" />
+        <input type="reset" class="btn reset-btn" value="Reset" />
       </form>
     </div>
   </section>
@@ -58,7 +58,7 @@ export default {
 .container {
   width: 1000px;
   margin: 0 auto;
-  form {
+  .add-form {
     .title {
       font-size: 30px;
       margin: 0 0 10px;
@@ -80,29 +80,26 @@ export default {
         resize: none;
       }
     }
-    .submit-btn {
+    .btn {
       font-size: 20px;
-      background-color: #0b0;
       border: none;
       color: #fff;
       padding: 5px 10px;
       transition-duration: 0.1s;
       cursor: pointer;
+    }
+    .submit-btn {
+      background: #0b0;
       &:hover {
-        background-color: #090;
+        background: #090;
       }
     }
     .reset-btn {
       margin-left: 20px;
-      font-size: 20px;
-      background-color: #777;
-      border: none;
-      color: #fff;
-      padding: 5px 10px;
-      transition-duration: 0.1s;
+      background: #777;
       cursor: pointer;
       &:hover {
-        background-color: #333;
+        background: #333;
       }
     }
   }

@@ -27,7 +27,7 @@ export default createStore({
         });
     },
     updateMessageAction({ commit }, payload) {
-      axios.post('http://localhost:5000/updateMessage', { id: payload })
+      axios.post('http://localhost:5000/updateMessage', payload)
         .then(function (response) {
           const messages = response.data;
           commit('updateMessage', messages);
