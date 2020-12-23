@@ -26,6 +26,16 @@ export default createStore({
           console.log(error);
         });
     },
+    updateMessageAction({ commit }, payload) {
+      axios.post('http://localhost:5000/updateMessage', { id: payload })
+        .then(function (response) {
+          const messages = response.data;
+          commit('updateMessage', messages);
+        })
+        .catch(function (error) {
+          console.log(error);
+        });
+    },
     deleteMessageAction({ commit }, payload) {
       axios.post('http://localhost:5000/deleteMessage', { id: payload })
         .then(function (response) {
@@ -43,6 +53,9 @@ export default createStore({
     },
     addMessage(state, payload) {
       state.messages = payload;
+    },
+    updateMessage(state, payload) {
+      state.messages = payload
     },
     deleteMessage(state, payload) {
       state.messages = payload
