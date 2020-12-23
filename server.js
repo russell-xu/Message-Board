@@ -14,6 +14,25 @@ app.use(cors())
 app.use(bodyParser.urlencoded({ extended: false }))
 app.use(bodyParser.json())
 
+client.zadd("messages", "0", "test")
+client.zadd("messages", "1", "test1")
+client.zadd("messages", "2", "test2")
+client.zrem("messages", "test1")
+client.zadd("messages", "2", "test3")
+client.zrange('messages', 0, -1, function (err, members) {
+    // the resulting members would be something like
+    // ['userb', '5', 'userc', '3', 'usera', '1']
+    // use the following trick to convert to
+    // [ [ 'userb', '5' ], [ 'userc', '3' ], [ 'usera', '1' ] ]
+    // learned the trick from
+    // http://stackoverflow.com/questions/8566667/split-javascript-array-in-chunks-using-underscore-js
+    // var lists = _.groupBy(members, function (a, b) {
+    //     return Math.floor(b / 2);
+    // });
+    // console.log(_.toArray(lists));
+    console.log(members);
+});
+
 client.get("messages", function (err, reply) {
     if (!reply) {
         client.set("messages", "[]")
