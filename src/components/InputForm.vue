@@ -24,7 +24,7 @@
 </template>
 
 <script>
-import { mapActions, mapState } from "vuex";
+import { mapActions } from "vuex";
 
 export default {
   name: "InputForm",
@@ -37,36 +37,9 @@ export default {
   methods: {
     ...mapActions(["addMessageAction"]),
     onSubmit() {
-      if (!localStorage.getItem("count")) {
-        localStorage.setItem("count", 0);
-      }
-      const count = () => {
-        const count = parseInt(localStorage.getItem("count")) + 1;
-        localStorage.setItem("count", count);
-        return count;
-      };
-      const dateTime = () => {
-        const today = new Date();
-        const date =
-          today.getFullYear() +
-          "-" +
-          (today.getMonth() + 1) +
-          "-" +
-          today.getDate();
-        const time =
-          today.getHours() +
-          ":" +
-          today.getMinutes() +
-          ":" +
-          today.getSeconds();
-        const dateTime = date + " " + time;
-        return dateTime;
-      };
       if (this.name !== "" && this.message !== "") {
         const messageInfo = {
-          id: count(),
           name: this.name,
-          time: dateTime(),
           message: this.message,
         };
         this.addMessageAction(messageInfo);
@@ -76,9 +49,6 @@ export default {
         alert("Field cannot be empty!");
       }
     },
-  },
-  computed: {
-    ...mapState(["messages"]),
   },
 };
 </script>

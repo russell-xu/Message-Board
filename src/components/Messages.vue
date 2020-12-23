@@ -21,7 +21,7 @@
 </template>
 
 <script>
-import { mapActions, mapState } from "vuex";
+import { mapActions, mapGetters } from "vuex";
 // import { onMounted } from "vue";
 export default {
   name: "Messages",
@@ -30,7 +30,7 @@ export default {
     ...mapActions(["getMessagesAction", "deleteMessageAction"]),
   },
   computed: {
-    ...mapState(["messages"]),
+    ...mapGetters(["messages"]),
   },
   mounted() {
     this.getMessagesAction();
