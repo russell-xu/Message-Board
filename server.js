@@ -14,44 +14,31 @@ app.use(cors())
 app.use(bodyParser.urlencoded({ extended: false }))
 app.use(bodyParser.json())
 
-client.zadd("messages", "0", "test")
-client.zadd("messages", "1", "test1")
-client.zadd("messages", "2", "test2")
-client.zrem("messages", "test1")
-client.zadd("messages", "2", "test3")
-client.zrange('messages', 0, -1, function (err, members) {
-    // the resulting members would be something like
-    // ['userb', '5', 'userc', '3', 'usera', '1']
-    // use the following trick to convert to
-    // [ [ 'userb', '5' ], [ 'userc', '3' ], [ 'usera', '1' ] ]
-    // learned the trick from
-    // http://stackoverflow.com/questions/8566667/split-javascript-array-in-chunks-using-underscore-js
-    // var lists = _.groupBy(members, function (a, b) {
-    //     return Math.floor(b / 2);
-    // });
-    // console.log(_.toArray(lists));
-    console.log(members);
-});
-
-client.get("messages", function (err, reply) {
+client.get("serial_number", (err, reply) => {
     if (!reply) {
-        client.set("messages", "[]")
+        client.set("serial_number", 0);
     }
 });
 
-client.get("serial_number", function (err, reply) {
-    if (!reply) {
-        client.set("serial_number", 0)
-    }
-});
+const dataTranslation = (data) => {
+    let translated = [];
+    data.forEach(item => {
+        translated.push(JSON.parse(item));
+    });
+    return translated;
+}
 
 const getMessages = async (req, res) => {
     try {
         console.log('Get Data...');
-        client.get("messages", function (err, reply) {
-            let messages = JSON.parse(reply);
-            res.send(messages);
-            console.log(messages);
+        client.zrange("messages", 0, -1, (err, reply) => {
+            console.log(reply);
+            if (reply) {
+                const messages = dataTranslation(reply);
+                res.send(messages);
+            } else {
+                res.send([]);
+            }
         });
     } catch (error) {
         console.log(error);
@@ -81,15 +68,14 @@ const addMessage = async (req, res) => {
             return dateTime;
         };
 
-        client.get("messages", function (err, data) {
-            client.get("serial_number", function (err, reply) {
-                const idNumber = parseInt(reply)
-                client.set("serial_number", idNumber + 1)
-                req.body.id = idNumber;
-                req.body.time = dateTime();
-                let messages = JSON.parse(data);
-                messages.push(req.body);
-                client.set("messages", JSON.stringify(messages));
+        client.get("serial_number", (err, num) => {
+            const idNumber = parseInt(num);
+            client.set("serial_number", idNumber + 1);
+            req.body.id = idNumber;
+            req.body.time = dateTime();
+            client.zadd("messages", idNumber, JSON.stringify(req.body))
+            client.zrange("messages", 0, -1, (err, reply) => {
+                const messages = dataTranslation(reply);
                 res.send(messages);
                 console.log(req.body);
             });
@@ -104,13 +90,15 @@ const updateMessage = async (req, res) => {
     try {
         console.log('Update Data...');
         console.log(req.body);
-        client.get("messages", function (err, data) {
-            let messages = JSON.parse(data);
+        client.zrange("messages", 0, -1, (err, reply) => {
+            const messages = dataTranslation(reply);
             const found = messages.find(el => el.id == req.body.id);
+            req.body.time = found.time;
+            client.zrem("messages", JSON.stringify(found))
+            client.zadd("messages", req.body.id, JSON.stringify(req.body))
             const i = messages.indexOf(found)
             messages[i].name = req.body.name;
             messages[i].message = req.body.message;
-            client.set("messages", JSON.stringify(messages));
             res.send(messages);
         });
     } catch (error) {
@@ -123,11 +111,11 @@ const deleteMessage = async (req, res) => {
     try {
         console.log('Delete Data...');
         console.log(req.body);
-        client.get("messages", function (err, data) {
-            let messages = JSON.parse(data);
+        client.zrange("messages", 0, -1, (err, reply) => {
+            const messages = dataTranslation(reply);
             const found = messages.find(el => el.id == req.body.id);
+            client.zrem("messages", JSON.stringify(found))
             messages.splice(messages.indexOf(found), 1);
-            client.set("messages", JSON.stringify(messages));
             res.send(messages);
         });
     } catch (error) {

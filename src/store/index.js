@@ -8,41 +8,41 @@ export default createStore({
   actions: {
     getMessagesAction({ commit }) {
       axios.get('http://localhost:5000/getMessages')
-        .then(function (response) {
+        .then((response) => {
           const payload = response.data;
           commit('getMessages', payload);
         })
-        .catch(function (error) {
+        .catch((error) => {
           console.log(error);
         })
     },
     addMessageAction({ commit }, payload) {
       axios.post('http://localhost:5000/addMessage', payload)
-        .then(function (response) {
+        .then((response) => {
           const messages = response.data;
           commit('addMessage', messages);
         })
-        .catch(function (error) {
+        .catch((error) => {
           console.log(error);
         });
     },
     updateMessageAction({ commit }, payload) {
       axios.post('http://localhost:5000/updateMessage', payload)
-        .then(function (response) {
+        .then((response) => {
           const messages = response.data;
           commit('updateMessage', messages);
         })
-        .catch(function (error) {
+        .catch((error) => {
           console.log(error);
         });
     },
     deleteMessageAction({ commit }, payload) {
       axios.post('http://localhost:5000/deleteMessage', { id: payload })
-        .then(function (response) {
+        .then((response) => {
           const messages = response.data;
           commit('deleteMessage', messages);
         })
-        .catch(function (error) {
+        .catch((error) => {
           console.log(error);
         });
     }
